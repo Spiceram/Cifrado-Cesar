@@ -1,0 +1,23 @@
+#include <iostream>
+#include <string.h>
+#include "Cesar.h"
+
+using namespace std;
+
+int main()
+{
+  Cifrado_Cesar emisor;
+  Cifrado_Cesar receptor;
+
+  string mensaje;
+  getline(cin,mensaje);----> pedimos el mensaje a cifrar
+
+  string Mcifrado = emisor.cifrado(mensaje);
+  /*
+  cout<<receptor.descifrado(emisor.cifrado(mensaje));        >>>
+  string Mdescifrado = receptor.descifrado(mensajecifrado);    > Descifrado
+  cout << endl << Mdescifrado;                               >>>
+  */
+  cout << Mcifrado;
+  
+}
