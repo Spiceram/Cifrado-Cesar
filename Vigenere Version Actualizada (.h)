@@ -1,0 +1,59 @@
+//.h
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Cifrado_Vigenere
+{
+  private:
+  string clave;
+
+  public:
+  string alf;
+
+  Cifrado_Vigenere();
+
+  string cifraralf(string msg);
+
+  string descifraralf(string msg);
+
+}; 
+
+Cifrado_Vigenere::Cifrado_Vigenere()
+{
+  //clave usada el dia de revision para comprobar su descifrado con el de mi compañero y su codigo de alumno
+  clave = "Diego Nicolas Vilchez Gustavson 181-10-43365";
+
+  alf = "abcdefghijklmnopqrstuvwxyz -ABCDEFGHIJKLMNOPQRSTUVWXYZ,.0123456789";
+
+};
+
+string Cifrado_Vigenere::descifraralf(string msg)
+{
+  int aux,aux2,aux3,tam;
+  tam=alf.length();
+  for(int i=0,j=0;i<msg.length();++i,++j)
+  {
+    aux=alf.find(msg[i]);
+    aux2=alf.find(clave[j%clave.length()]);
+    aux3=(aux-aux2+tam)%tam;
+    msg[i]=alf[aux3];
+  }
+  return msg;
+}
+
+
+string Cifrado_Vigenere::cifraralf(string msg)
+{
+    int aux,aux2,aux3,tam;
+  tam=alf.length();
+  for(int i=0,j=0;i<msg.length();++i,++j)
+  {
+    aux=alf.find(msg[i]);
+    aux2=alf.find(clave[j%clave.length()]);
+    aux3=(aux+aux2)%tam;
+    msg[i]=alf[aux3];
+  }
+  return msg;
+};
