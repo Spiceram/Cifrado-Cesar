@@ -1,0 +1,29 @@
+//main
+#include <iostream>
+#include <string>
+
+#include "Vigenere.h"
+
+using namespace std;
+
+int main()
+{
+  string mss,cifrar_mss,descifrar_mss;
+  
+  Cifrado_Vigenere cypher;
+  
+
+  mss= /*"bvkk-GRzqMpxFCa-zAlrXKUN CiSsqvMey4Dr4Rj35ejVGhkMS3wAoDtEK7BtnpwQGIGQP zNBrPkmrDeqK4tf6iLxyroAVwpMoeQB1  qzmQG.GIRvHBoEGccjZ44Zg3mamLipEFC8-kz";*/"Ingeniero experto en movilizacion de espacios de uso automovilistico y experto en la manipulacion de dispositivos volatiles de material textil";
+
+  
+  cifrar_mss=cypher.cifraralf(mss);
+
+  //descifrar_mss=cypher.descifraralf(mss);
+
+
+  cout<<cifrar_mss<<"\n";
+  cout<<"\n";
+  //cout<<descifrar_mss<<"\n";
+
+
+}
