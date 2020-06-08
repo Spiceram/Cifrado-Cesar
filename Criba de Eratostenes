@@ -1,0 +1,59 @@
+//Criba de Eratostenes
+#include <iostream>
+#include <vector>
+using namespace std;
+int criba_Eratostenes(int a);
+int fun_modulo(int x,int y)
+{
+int r;
+r=x-((x/y)*y);
+if(r<0)
+r=x-(((x/y)-1)*y);
+return r;
+}
+int mcd(int x,int y)
+{
+int r;
+r=fun_modulo(x,y);
+while (r > 0)
+{
+ x=y;
+ y=r;
+ r = fun_modulo(x,y);
+}
+return y;
+}
+int Criba(int a)
+{
+ vector<int> Matriz;
+ for (int i = 2; i < a; i++)
+ {
+ bool marca = false;
+ for (int j = 2; j < i; j++)
+ {
+ if (mcd(j, i) != 1)
+ marca = true;
+ else
+ continue;
+ }
+ if (marca == true)
+ continue;
+ else
+ Matriz.push_back(i);
+ }
+ for (int i = 0; i < Matriz.size(); i++)
+ {
+ cout << Matriz[i] << '\t';
+ if (fun_modulo(i + 1, 6) == 0)
+ cout << endl;
+ }
+return 0;
+}
+int main()
+{
+int Limite;
+cout << "Inserte el limite de operacion de la criba: ";
+cin >> Limite;
+cout << "\nLista de numeros primos hasta " << Limite << "\n=====================================\n";
+Criba(Limite);
+}
