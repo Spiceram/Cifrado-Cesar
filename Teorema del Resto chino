@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+
+int mod(int f1, int f2)
+{
+    int resto1 = f1 - ((f1/f2)*f2);
+    if (resto1 < 0)
+        resto1 = f2 + resto1;
+    
+    return resto1;
+}
+
+bool np(int pn)
+{
+    for (int i = 2; i < pn; i++)
+        if( mod(pn, i) == 0)
+            return false;
+        
+    
+    return true;
+}
+
+
+double euext(int f1, int f2, int *_x, int *_y)
+{
+    int res = mod(f1, f2);
+    if (res == 0)
+    {
+        *_x = 0;
+        *_y = 1;
+        return f2;
+    }
+    f1 = f2;
+    f2 = res;
+    int x1, y1;
+    int mcd = euext(f1, f2, &x1, &y1);
+    *_x = y1 - (f1/f2) * x1;
+    *_y = x1;
+    return mcd;
+}
+
+double invMul(int f1, int f2)
+{
+    int x, y,res;
+    euext(f1, f2, &x, &y);
+    res = mod((mod(x, f2) + f2), f2);
+    
+    return res;
+}
+int ecuación(int pn[], int an[], int ziz)
+{
+    int P, Pi[ziz],qi[ziz], X;
+    X = 0; P = 1;
+    for (int i = 0; i < ziz; i++)
+        P *= pn[i];
+    
+    for (int i = 0; i < ziz; i++)
+    {
+        Pi[i] = P / pn[i];
+        qi[i] = invMul (Pi[i], pn[i]);
+        X += an[i] * Pi[i] * qi[i];
+    }
+    cout << "\nX = " << mod(X, P) << " +\n " << P << ".K\n"<< endl;
+
+    return mod(X, P);
+}
+
+bool verificar(int pn[], int ziz)
+{
+    for (int i = 0; i < ziz; i++)
+    {
+        if (np(pn[i]) == false)
+            return false;
+    }
+    return true;
+}
+
+
+void resto_chino(int pn[], int an[], int ziz)
+{
+    if (verificar(pn, ziz) == true)
+        cout << ecuación(pn, an, ziz) << endl;
+    else
+        cout << "\n====================================\nLos numeros ingresados no son multiplos entre si" << endl;
+}
