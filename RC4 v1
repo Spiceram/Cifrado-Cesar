@@ -1,0 +1,239 @@
+//Main.cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <Windows.h>
+#include <time.h> //porque al parecer time es mas preciso que chrono en visual.
+#include "op.h"
+
+using namespace std;
+
+int main() 
+{
+    SYSTEM_INFO system;
+
+    GetSystemInfo(&system);
+
+    int bits;
+    cout << "BITS para el numero a generar: ";
+    cin >> bits;
+    //aqui intente crear un array variable y llenarlo con un bucle con los numeros del 0 al bits, para despues elevar 2 a dichos numeros en otro bucle y tenerlos en otra lista, para despues dezplazar un contador entre la lista del numero binario y esta comparando si posee 1 o 0, poner los resultados en otra lista y simplemente sumar.
+    
+   // y asi ya se crearian los numeros generados.(todavia en proceso)
+    /*
+   
+    int list[bits];
+
+    int f1 = 0;
+    while (f1 <= bits)
+    {
+        
+    }
+
+    */
+    
+    vector<char> fin;
+
+    clock_t temp;
+    double reloj;
+    temp = clock();
+    
+
+
+    for (int i = 0; i < 10; i++)
+    {
+        while (fin.size() < bits) 
+        {
+            long double hora = time(NULL);
+            long double proc = hora * system.dwProcessorType - (hora / system.dwProcessorType);
+
+            hora = time(NULL);
+            long double numproc = modulo(hora * system.dwNumberOfProcessors, hora / system.dwNumberOfProcessors);
+
+            hora = time(NULL);
+            long double mask = modulo(hora * system.dwActiveProcessorMask, hora / system.dwActiveProcessorMask);
+            mask *= proc;
+            mask -= numproc;
+
+            hora = time(NULL);
+            long double pagSize = hora * system.dwPageSize;
+
+            hora = time(NULL);
+            long double sisMaxAA = hora * int(system.lpMaximumApplicationAddress) + hora / int(system.lpMaximumApplicationAddress);
+
+
+            proc = modulo(proc, 256);
+            numproc = modulo(numproc, 256);
+            mask = modulo(mask, 256);
+            pagSize = modulo(pagSize, 256);
+            sisMaxAA = modulo(sisMaxAA, 256);
+
+            vector<unsigned long long int> data;
+            data.push_back(proc);
+            data.push_back(numproc);
+            data.push_back(mask);
+            data.push_back(pagSize);
+            data.push_back(sisMaxAA);
+
+            vector<char> resultados;
+
+            RC4(256, data, resultados);
+
+            vector<char> t = DES(resultados);
+
+            for (int i = 0; i < resultados.size(); i++) 
+                fin.push_back(resultados[i]);
+            
+        }
+
+        for (int i = 0; i < fin.size(); i++)        
+            cout << fin[i];
+        
+        cout << endl;
+    }
+
+    cout << endl;
+
+
+    reloj = (clock() - temp) / (double)CLOCKS_PER_SEC;
+    cout << "Tiempo de ejecucion: " << reloj << "s";
+
+}
+//op.h
+#include <iostream>
+#include <string>
+#include <vector>
+#include <Windows.h>
+#include <time.h>
+
+using namespace std;
+
+long long int modulo(unsigned long long int a, unsigned long long int b) {
+    unsigned long long int r = a - ((a / b) * b);
+    if (r < 0) {
+        r += b;
+    }
+    return r;
+}
+
+string toBin(unsigned long long int a) {
+    string result;
+    for (int i = 8; i > 0; i--) {
+        if (a >= pow(2, i - 1)) {
+            result += '1';
+            a -= pow(2, i - 1);
+        }
+        else {
+            result += '0';
+        }
+    }
+    return result;
+}
+
+unsigned long long int toDec(string bin) {
+    unsigned long long int result = 0;
+    for (int i = bin.length() - 1; i >= 0; i--) {
+        if (bin[i] == '0') {
+            continue;
+        }
+        else {
+            result += powl(2, bin.size() - i - 1);
+        }
+    }
+    return result;
+}
+
+void swapC(unsigned long long int& a, unsigned long long int& b) {
+    unsigned long long int aux = 0;
+    aux = a;
+    a = b;
+    b = aux;
+}
+
+unsigned long long int RC4(unsigned long long int a, vector<unsigned long long int> b, vector<char>& c) {
+
+    vector<unsigned long long int> s;
+    vector<unsigned long long int> k;
+    unsigned long long int f = 0;
+    unsigned long long int aux = 0;
+    unsigned long long int aux2 = 0;
+
+    for (int i = 0; i < a; i++) 
+        s.push_back(i);
+    
+    for (int j = 0; j < b.size(); j++) 
+        k.push_back(b[j]);
+    
+
+    for (int i = 0; i < a; i++) 
+    {
+        f = f + s[i] + k[modulo(i, b.size())];
+        f = modulo(f, a);
+        swapC(s[i], s[f]);
+    }
+
+    for (int i = 0; i < 8; i++) 
+    {
+        string s2 = toBin(s[i]);
+        for (int j = 0; j < 8; j++) 
+            c.push_back(s2[j]);
+        
+    }
+
+    return 0;
+}
+
+
+int PC1[56] = { 57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4 };
+int PC2[48] = { 14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2,41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32 };
+
+vector<char> DES(vector<char> c) 
+{
+    vector<char> k1;
+
+    for (int i = 0; i < 56; i++) 
+    {
+        int j = PC1[i] - 1;
+        k1.push_back(c[j]);
+    }
+
+    vector<char> c0;
+    vector<char> d0;
+
+    for (int i = 0; i < 28; i++) 
+    {
+        c0.push_back(k1[i]);
+        d0.push_back(k1[i + 28]);
+    }
+
+    vector<char> c1 = c0;
+    vector<char> d1 = d0;
+
+    c1.push_back(c1[0]);
+    c1.erase(c1.begin());
+
+    d1.insert(d1.begin(), d1[27]);
+    d1.pop_back();
+
+    vector<char> temp;
+
+    for (int i = 0; i < 28; i++)
+        temp.push_back(c1[i]);
+    
+
+    for (int i = 0; i < 28; i++) 
+        temp.push_back(d1[i]);
+    
+
+    vector<char> k2;
+
+    for (int i = 0; i < 48; i++) 
+    {
+        int j = PC2[i] - 1;
+
+        k2.push_back(temp[j]);
+    }
+
+    return k2;
+}
+
