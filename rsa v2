@@ -1,0 +1,202 @@
+//RSA.cpp
+#include <iostream>
+#include "rsa.h"
+
+int main() 
+{
+	std::cout << "######   #####     #    \n#     # #     #   # #   \n#     # #        #   #  \n######   #####  #     # \n#   #         # ####### \n#    #  #     # #     # \n#     #  #####  #     # \n";
+
+	RSA rsa(Alfabeto);
+	string Robin;
+
+	std:: cin>> Robin;
+	std::cout << "cypher";
+	rsa.cifrar(Robin);
+	std::cout << "descypher";
+	rsa.descifrar(rsa.cifrar);
+}
+
+//rsa.h
+#include <iostream>
+#include <vector>
+#include <math.h>
+
+#define Alfabeto ("ABCDEFGHIJKLMNOPQRSTUVWXYZ,.-( )abcdefghijklmnopqrstuvwxyz<>*1234567890")
+
+//en cuanto mi zz empezo a fallar y se volvio irrecuperable, empece a usar long double (claro tiene problemas tambien)
+
+using namespace std;
+
+
+long double modulo(long double a, long double b) 
+{
+	long double r((-1 * ((a / b) * b) + a));
+
+	return r;
+}
+
+long double mcd(long double a, long double b) 
+{
+	long double a2(a), b2(b);
+
+	long double r(modulo(a, b));
+
+	while (r != 0) 
+	{
+		long double q(a / b);
+		r = modulo(a, b);
+		a = b;
+		b = r;
+	}
+
+	return a;
+}
+
+///////////////////////////////////
+///////////////////////////////////
+long double inverso(long double a, long double b) 
+{
+
+	long double r1 = a, r2 = b;
+	long double s1(1), s2(0);
+	long double t1(0), t2(1);
+	long double r, s, t;
+
+	while (r2 > 0) 
+	{
+		long double q = r1 / r2;
+
+		r = r1 - (q * r2);
+		r1 = r2;
+		r2 = r;
+
+		s = s1 - (q * s2);
+		s1 = s2;
+		s2 = s;
+
+		t = t1 - (q * t2);
+		t1 = t2;
+		t2 = t;
+	}
+
+	return modulo(s1, b);
+
+}
+
+long double cribaE(long double a) 
+{
+
+	vector<long double> n;
+
+	long double i(2);
+	while (i < a) 
+	{
+		bool marca = false;
+		long double j(i - 20);
+		while (j < i) {
+			if (mcd(j, i) != 1) 
+			{
+				marca = true;
+				j += i;
+			}
+			j++;
+		}
+		if (marca != true) 
+		{
+			cout << i << '\t';
+			n.push_back(i);
+		}
+		i++;
+	}
+
+
+
+	return long double(0);
+}
+/////////////////////////////////
+/////////////////////////////////
+class RSA 
+{
+public:
+	string alfabeto;
+	long double p1,q1,phiN,d;
+	long double e,n,p,q;
+
+	vector<long double> cypher;
+	vector<long double> descypher;
+
+	RSA(string a) {
+		alfabeto = a;
+		p = long double(20000);
+		q = long double(90000);
+		n = p * q;
+		p1 = p - 1;
+		q1 = q - 1;
+		phiN = p1 * q1;
+		e = long int(30000);
+		d = inverso(e, phiN);
+	}
+	///////////////////////////////////
+	//////////////////////////////////
+	int mod(int x, int y)
+	{
+		int z;
+		z = x - x / y * y;
+		return z;
+	}
+
+	int ExponenciacionM(int x2, int e, int n)
+	{
+		int Res(1);
+		while (e != 0)
+		{
+			if ((e & 1) == 1)
+				Res = mod(x2 * Res, n);
+			x2 = mod(x2 * x2, n);
+			e >>= 1;
+		}
+		return Res;
+	}
+	//////////////////////////////////
+	//////////////////////////////////
+
+	void cifrar(string m) 
+	{
+		for (long double i = 0; i < m.length(); i++)
+		{
+			int x = alfabeto.find(m[i]);
+
+			cout << "Letra: " << m[i] << "Numero: " <<x<< endl;
+
+			long double x2(x);
+
+			long double character = ExponenciacionM(x2, e, n);
+
+			cypher.push_back(character);
+		}
+
+		cout << endl;
+
+		for (long double j = 0; j < cypher.size(); j++)
+			cout << "letra descifrada: " << cypher[j] << endl;
+
+		cout << endl;
+		return;
+	}
+
+	void descifrar(vector<long double> lo)
+	{
+		for (long double i = 0; i < lo.size(); i++)
+		{
+			long double character = ExponenciacionM(lo[i], d, phiN);
+			character = modulo(character, long double(alfabeto.length()));
+			descypher.push_back(character);
+		}
+
+		for (long double j : descypher)
+			cout << "Letra descifrada: " << j << endl;
+
+	}
+
+};
+
