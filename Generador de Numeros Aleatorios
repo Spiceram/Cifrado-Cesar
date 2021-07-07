@@ -1,0 +1,160 @@
+#include <iostream>
+#include <windows.h>
+#include <stdio.h>
+#include <string>
+#pragma comment(lib, "user32.lib")
+#include <ctime>
+#include <chrono>
+#include <tchar.h>
+#include <cmath>
+#include "psapi.h"
+
+using namespace std;
+
+int main()
+{
+
+    int A[7];
+    int i = 0;
+    int x = 0;
+    while (i <= 6)
+    {
+
+        unsigned t0, t1;
+        float a = 0.1;
+        t0 = clock();
+        t1 = clock();
+        while (a < 989898989898)
+        {
+            a *= 1.5;
+        }
+
+        double time = (double(t1 - t0) / CLOCKS_PER_SEC);
+
+        auto start = chrono::high_resolution_clock::now();
+
+        auto finish = chrono::high_resolution_clock::now();
+
+        cout << chrono::duration_cast<chrono::nanoseconds>(finish - start).count() << " nanosegundos\n\n";//Por alguna razon Visual Studio siempre suelta numeros redondos, esto no sucede con otros entornos de desarrollo.(Incluso en Replit trae resultados mas variados)
+
+        int num(chrono::duration_cast<chrono::nanoseconds>(finish - start).count());
+
+        i++;
+
+        A[x] = num;//Aqui intente colocar los numeros que genere este bucle a otro bucle, sin exito, entonces intente insertarlo en la posicion 0 para que los numeros se empujen unos a otros a la posicion siguiente, pero algo hice mal y opte por un simple contador.
+        x++;
+    }
+
+    int j;
+    for (j = 0; j <= 6; j++)
+    {
+        cout << A[j] << ",";
+    }
+    cout << "lista de tiempos generados\n\n";
+    ////////////////////////
+
+    /*
+    //INFORMACION DE HARDWARE
+    HW_PROFILE_INFO   HwProfInfo;
+    if (!GetCurrentHwProfile(&HwProfInfo))
+    {
+        _tprintf(TEXT("GetCurrentHwProfile failed with error %lx\n"),
+            GetLastError());
+        return;
+    }
+
+    _tprintf(TEXT("DockInfo = %d\n"), HwProfInfo.dwDockInfo);
+    _tprintf(TEXT("Profile Guid = %s\n"), HwProfInfo.szHwProfileGuid);
+    _tprintf(TEXT("Friendly Name = %s\n"), HwProfInfo.szHwProfileName);
+    */
+    ////////////////
+    //i7 6700hq 2.2ghz base 8 nucleos logicos, 4 nucleos fisicos
+
+    //Claves propias
+    SYSTEM_INFO siSysInfo;
+
+
+    GetSystemInfo(&siSysInfo);
+
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    GlobalMemoryStatusEx(&memInfo);
+    DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+    cout << memInfo.ullTotalPageFile << "\n\n";
+
+    printf("Informacion del procesador: \n");
+    printf("  OEM ID: %u\n", siSysInfo.dwOemId);
+    printf("  Number of processors: %u\n", siSysInfo.dwNumberOfProcessors);
+    printf(" ActiveProcessorMask: %u\n", siSysInfo.dwActiveProcessorMask);
+    printf("  Page size: %u\n", siSysInfo.dwPageSize);
+    printf("  Processor type: %u\n", siSysInfo.dwProcessorType);
+    printf("  Active processor mask: %u\n", siSysInfo.dwActiveProcessorMask);
+
+    double f1(siSysInfo.dwOemId);
+    double f2(siSysInfo.dwNumberOfProcessors);
+    double f3(siSysInfo.dwActiveProcessorMask);
+    double f4(siSysInfo.dwPageSize);
+    double f5(siSysInfo.dwProcessorType);
+    double f6(siSysInfo.dwActiveProcessorMask);
+    double f7(memInfo.ullTotalPageFile);
+
+    double B[7] = { f1,f2,f3,f4,f5,f6,f7};
+    int k;
+    for (k = 0; k <= 6; k++)
+    {
+        cout << B[k] << ",";
+    }
+    cout << "lista de datos de procesador generados\n\n";
+
+    double Num[100];
+    int y;
+    for (y = 0; y <= 6; y++)
+    {
+        Num[y] = (((A[y] * B[y]) + ((B[y]*A[y])*1.9))); //Creamos otra lista a partir de los elementos fijos y generados.
+        cout << Num[y]<<"\n";
+    }
+
+        //printf("  Minimum application address: %lx\n", siSysInfo.lpMinimumApplicationAddress);//las direcciones no son valores numericos, no encontre una forma de aprovecharlas
+        //printf("  Maximum application address: %lx\n", siSysInfo.lpMaximumApplicationAddress);
+
+        //double A[6] = { siSysInfo.dwOemId, siSysInfo.dwNumberOfProcessors, siSysInfo.dwActiveProcessorMask, siSysInfo.dwPageSize, siSysInfo.dwProcessorType, siSysInfo.dwActiveProcessorMask };
+
+
+
+};
+
+EJEMPLO DE EJECUCION
+3300 nanosegundos
+
+300 nanosegundos
+
+400 nanosegundos
+
+300 nanosegundos
+
+200 nanosegundos
+
+400 nanosegundos
+
+200 nanosegundos
+
+3300,300,400,300,200,400,200 lista de tiempos generados
+
+19734323200
+
+Informacion del procesador:
+  OEM ID: 0
+  Number of processors: 8
+  Active Processor Mask: 255
+  Page size: 4096
+  Processor type: 586
+  Active processor mask: 255
+0,8,255,4096,586,255,1.97343e+10 lista de datos de procesador generados
+
+0
+6960
+295800
+3.56352e+06
+339880
+295800
+1.14459e+13

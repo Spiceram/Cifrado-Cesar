@@ -1,0 +1,234 @@
+//main.cpp
+#include <iostream>
+using namespace std;
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string>
+#include "RSA.h"
+
+int main()
+{
+    int e,N;
+    RSA receptor(e,N);
+    receptor.get();
+    string mensaje;
+    receptor.cifrar("POLO NORTE");
+    return 0;
+}
+//RSA.h
+#include <iostream>
+using namespace std;
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string>
+
+class RSA 
+{
+
+    int p,q,fi_N,d,e;
+
+    public:
+        RSA(int&,int&);
+        int N;
+        string alfabeto;
+        string cifrar(string);
+        string descifrar();
+        int generar_p();
+        int generar_q();
+        int generar_e();
+        int resto(int,int);
+        int euclides(int,int);
+        int inversa(int,int);
+        bool criba(int,int);
+        void get();
+};
+
+
+RSA::RSA(int& a,int& b)
+{
+    alfabeto="ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+    p=generar_p();
+    q=generar_q();
+    N=p*q;
+    fi_N=(p-1)*(q-1);
+    e=generar_e();
+    a=N;
+    b=e;
+    d=inversa(e,fi_N);
+}
+
+bool RSA::criba(int N,int num)
+{
+  int i,j , a[N+1],cont=0;
+  for(a[1]=0,i=2;i<=N;i++)
+    a[i]=1;
+  
+  for(i=2; i<=N/2;i++)
+        for(j=2;j<=N/i;j++)
+            if(a[i*j])
+                a[i*j]=0;
+        
+
+  if(a[num]==0)
+    return false;
+  
+  else
+    return true;
+  
+
+}
+
+int RSA::generar_e()
+{
+    srand(time(NULL));
+    do
+        e=1+rand()%(fi_N);
+
+    while(!criba(fi_N,e));
+      cout<<"Generado e: "<<e<<endl; 
+    return e;
+
+}
+int RSA::generar_p()
+{
+
+    srand(time(NULL));
+    int rango=1000;
+    do
+      p=1+rand()%(rango-1);
+
+    while(!criba(rango,p));
+      cout<<"Generado p: "<<p<<endl;
+    return p;
+
+}
+
+int RSA::generar_q()
+{
+    srand(time(NULL));
+    int rango=999;
+    do
+        q=1+rand()%(rango-1);
+
+    while(!criba(rango,q));
+    cout<<"Generado q: "<<q<<endl;
+    return q;
+}
+void RSA::get()
+{
+    cout<<"N: "<<N<<"\nfi_N: "<<fi_N<<"\nd: "<<d;
+}
+
+int RSA::inversa(int a, int b)
+{
+
+	int mod=b;
+	int mcd = 0;
+
+	int r1 = a, r2 = b;
+	int s1 = 1, s2 = 0;
+	int t1 = 0,	t2 = 1;
+	int s;
+	int t;
+	while (r2 > 0)
+	{
+		int q = r1 / r2;
+
+		int r = r1 - (q * r2);
+		r1 = r2; r2 = r;
+
+		s = s1 - (q * s2);
+		s1 = s2; s2 = s;
+
+		t = t1 - (q * t2);
+		t1 = t2; t2 = t;
+	};
+
+	s = s1;
+	t = t1;
+	mcd = r1;
+
+	if(mcd ==1)
+  {
+    if(s<0)
+      s=s+b;
+        
+    return s;
+	}
+
+	else
+    return 0;
+	
+}
+
+string RSA::cifrar(string mensaje)
+{
+  string letra_cifrada,palabra_cifrada;
+  int pos_letra,pos_letra_cifrada,potenciador=1;
+  bool a=true;
+  int prob=e;
+  int piv=1;
+  for(int i=0; i<mensaje.length();i++)
+  {
+    pos_letra=alfabeto.find(mensaje[i]);
+
+    cout<<"\nValor L: "<<pos_letra<<endl;
+
+    while(a==true)
+    {
+      if(e>=0)
+      {
+        if(e%2==1)
+        {
+          if(e==prob)
+          {
+            pos_letra_cifrada=resto(pow(pos_letra,1),N);
+            piv=resto(pos_letra_cifrada*piv,N);
+          }
+
+          else
+          {
+            pos_letra_cifrada=resto(pow(pos_letra_cifrada,2),N);
+            piv=resto(pos_letra_cifrada*piv,N);
+
+          }
+
+        }
+
+        else if(e%2==0)
+          pos_letra_cifrada=resto(pow(pos_letra_cifrada,2),N);
+
+        e=e/2;
+        potenciador=potenciador*2;
+
+
+      }
+      if((e-1)==-1)
+        break;
+            
+    }
+
+    letra_cifrada=to_string(piv);
+    palabra_cifrada=palabra_cifrada+letra_cifrada;
+    piv=1;
+    e=prob;
+    cout<<endl<<letra_cifrada;
+
+  }
+  cout<<endl<<palabra_cifrada;
+  return palabra_cifrada;
+
+
+}
+
+int RSA::resto(int a,int b)
+{
+  int r;
+  r=a-((a/b)*b);
+  if(r<0)
+    r=b-r;
+        
+  return r;
+}

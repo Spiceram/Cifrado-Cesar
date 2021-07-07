@@ -1,0 +1,149 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Cifrado_Afin
+{
+  public:
+  string alfabeto;
+  int key,alf_length,key2;
+
+  Cifrado_Afin(int f1);
+
+  int extendido_de_euclides (int a,int b);
+
+  int fun_modulo (int a,int b);
+
+  int MCD (int a, int b);
+
+  int fun_Inversa (int a,int b);
+
+  string cypher (string msj);
+  string decypher (string cmsj);
+};
+
+Cifrado_Afin::Cifrado_Afin(int f1)
+{
+  alfabeto="ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+  key = f1;
+  alf_length = alfabeto.length();
+  key2 = fun_modulo(rand() % 100,alf_length);
+}
+
+int Cifrado_Afin::extendido_de_euclides(int x,int y)
+{
+  int q,s,t,r;
+  int r1=x,r2=y,s1=1,s2=0,t1=0,t2=1;
+  while(r2>0)
+  {
+    q=r1/r2;
+    r=r1-q*r2;
+    r1=r2;
+    r2=r;
+
+    s=s1-q*s2;
+    s1=s2;
+    s2=s;
+
+    t=t1-q*t2;
+    t1=t2;
+    t2=t;
+  }
+  s=s1;
+  t=t1;
+  return s;
+}
+
+int Cifrado_Afin::fun_modulo(int x,int y)
+{
+  int r;
+  r=x-((x/y)*y);
+  if(r<0)
+    r=x-(((x/y)-1)*y);
+  return r; 
+}
+
+int Cifrado_Afin::MCD(int x,int y)
+{
+  int r;
+  r=fun_modulo(x,y);
+  while (r > 0)
+  { 
+    x=y;
+    y=r;
+    r = fun_modulo(x,y);
+  }
+  return y;
+}
+
+
+int Cifrado_Afin::fun_Inversa(int x,int y)
+{
+  if(MCD(x,y)==1)
+  {
+    int inv = extendido_de_euclides(x,y);
+    if(fun_modulo((inv*x),y)==1)
+    {
+      if (inv<0)
+        inv=fun_modulo(inv,y);
+      return inv;
+    }
+  }
+
+  else
+    return 0;
+  return 0;
+}
+
+string Cifrado_Afin::cypher(string msj)
+{
+  int aux,aux2;
+  string cmsj;
+  for(int i=0;i<msj.length();i++)
+  {
+    aux = alfabeto.find(msj[i]);
+    aux2 = fun_modulo(((key*aux)+key2),alf_length);
+    cmsj += alfabeto[aux2];
+  }
+  return cmsj;
+}
+
+string Cifrado_Afin::decypher(string cmsj)
+{
+  int aux,aux2,aux3;
+  string dmsj;
+  aux = fun_Inversa(key,alf_length);
+  if(!aux)
+    return 0;
+  for(int i=0;i<cmsj.length();i++)
+  {
+    aux2 = alfabeto.find(cmsj[i]);
+    aux3 = fun_modulo(aux*(aux2-key2),alf_length);
+    dmsj += alfabeto[aux3];
+  }
+  return dmsj;
+}
+
+int main()
+{
+  Cifrado_Afin afin(23);//=======> Clave de mi grupo trabajada en clase (23).
+
+  string message;
+
+  cout<<"Favor de activar las mayusculas\nMensaje a cifrar: ";
+
+  //message ="CRAZY DIAMOND"; //=====>Mensaje de prueba.
+
+  getline(cin,message);
+
+  string cypher_message = afin.cypher(message);
+  string descypher_message = afin.decypher(cypher_message);
+
+
+  cout<<"\n=====================================\n=====================================\n";
+  cout<<"Cifrado del Mensaje:\n"<<cypher_message;
+
+  cout<<"\n=====================================\n=====================================\n";
+  cout<<"Descifrado del Mensaje:\n"<<descypher_message;
+}

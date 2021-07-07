@@ -1,0 +1,122 @@
+//////Inversa Multiplicativa
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Inversa_Multiplicativa
+{
+  public:
+  int a;
+  int n;
+  Inversa_Multiplicativa(int f1, int f2);
+  int MCD(int x, int y);
+  int Cam(int x,int y);
+  void op_inversa();
+  int AeuclidesE(int x, int y);
+};
+
+Inversa_Multiplicativa::Inversa_Multiplicativa(int f1, int f2)
+{
+  a=f1;
+  n=f2;
+}
+
+int Inversa_Multiplicativa::Cam(int x, int y)
+{
+  int res;
+  res=x-((x/y)*y);
+  if(res<0)
+  {
+    res=x-(((x/y)-1)*y);
+  }
+  return res;    
+}
+
+int Inversa_Multiplicativa::MCD(int a, int b)
+{
+  int res;
+  res=Cam(a,b);
+  while (res > 0)
+  { 
+    a=b;
+    b=res;
+    res = Cam (a,b);
+  }
+  return b;
+}
+
+
+//Algoritmo extendido de euclides
+
+int Inversa_Multiplicativa::AeuclidesE(int x, int y)
+{
+  int q,s,t,r;
+  int r1=x,r2=y;
+  int s1=1,s2=0;
+  int t1=0,t2=1;
+
+  while(r2>0)
+  {
+    q=r1/r2;
+    r=r1-q*r2;
+    r1=r2;
+    r2=r;
+
+    s=s1-q*s2;
+    s1=s2;
+    s2=s;
+
+    t=t1-q*t2;
+    t1=t2;
+    t2=t;
+  }
+  s=s1;
+  t=t1;
+
+  return s;
+}
+
+void Inversa_Multiplicativa::op_inversa()
+{
+  if(MCD(a,n) == 1)
+  {
+    int inv = AeuclidesE(a, n);
+    if(Cam((inv*a), n) ==1)
+    {
+      cout<<"La inversa de "<<a<<" en Z"<<n<<" es "<<inv;
+    }
+      
+    else
+    {
+      cout<<a<<" operado en Z"<<n<<" no posee una inversa"; 
+    }
+      
+  }
+  else
+  {
+    cout<<a<<" operado en Z"<<n<<" no posee una inversa";
+  }
+}
+int main() 
+{
+  int a,b;
+
+  cout<<"Numero a operar: ";
+  cin>>a;
+
+  cout<<"Base a operar: ";
+  cin>>b;
+
+  if(b<a)
+  {
+    cout<<"ERROR\nDatos inoperables";
+  }
+  else
+  {
+    Inversa_Multiplicativa op_inversa(a,b);
+
+    op_inversa.op_inversa();
+  }  
+
+
+}
